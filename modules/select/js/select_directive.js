@@ -416,7 +416,7 @@ angular.module('lumx.select', [])
                         }
                         ngModel.$setValidity('noItemSelected', valid);
                     }
-                    return valid;
+                    return value;
                 }
                 
                 ngModel.$parsers.unshift(selectValidation);
