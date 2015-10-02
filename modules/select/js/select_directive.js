@@ -385,6 +385,7 @@ angular.module('lumx.select', [])
             link: function(scope, element, attrs, ngModel)
             {
                 scope.lxSelectMultiple = angular.isDefined(attrs.multiple);
+                scope.lxSelectRequired = angular.isDefined(attrs.required);
                 scope.lxSelectFloatingLabel = angular.isDefined(attrs.floatingLabel);
                 scope.lxSelectTree = angular.isDefined(attrs.tree);
                 scope.lxSelectNgModel = ngModel;
@@ -403,6 +404,28 @@ angular.module('lumx.select', [])
                 scope.lxSelectFilter = undefined;
                 scope.lxSelectSelectionToModel = undefined;
                 scope.lxSelectModelToSelection = undefined;
+                
+                var selectValidation = function(value)
+                {
+                    var valid = true;
+                    if (scope.lxSelectRequired) {
+                        if (scope.lxSelectMultiple) {
+                            valid = value.length > 0;
+                        } else {
+                            valid = (value != null);
+                        }
+                        ngModel.$setValidity('noItemSelected', valid);
+                    }
+                    return valid;
+                }
+                
+                ngModel.$parsers.unshift(selectValidation);
+
+                attrs.$observe('required', function (newValue) 
+                {
+                    scope.lxSelectRequired = newValue != false;
+                    ngModel.$validate();
+                });
 
                 attrs.$observe('custom', function(newValue)
                 {
