@@ -420,6 +420,7 @@ angular.module('lumx.select', [])
                 }
                 
                 ngModel.$parsers.unshift(selectValidation);
+                ngModel.$formatters.unshift(selectValidation)
 
                 attrs.$observe('required', function (newValue) 
                 {
