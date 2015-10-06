@@ -410,7 +410,7 @@ angular.module('lumx.select', [])
                     var valid = true;
                     if (scope.lxSelectRequired) {
                         if (scope.lxSelectMultiple) {
-                            valid = value.length > 0;
+                            valid = (value != null && value.length > 0);
                         } else {
                             valid = (value != null);
                         }
