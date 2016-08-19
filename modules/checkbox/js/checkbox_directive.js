@@ -1,123 +1,109 @@
-(function() {
+(function()
+{
     'use strict';
 
     angular
-        .module('lumx.checkbox', [])
+        .module('lumx.checkbox')
         .directive('lxCheckbox', lxCheckbox)
         .directive('lxCheckboxLabel', lxCheckboxLabel)
         .directive('lxCheckboxHelp', lxCheckboxHelp);
 
     function lxCheckbox()
     {
-        var directive =
-        {
+        return {
             restrict: 'E',
             templateUrl: 'checkbox.html',
-            scope: {
-                ngModel: '=',
+            scope:
+            {
+                lxColor: '@?',
                 name: '@?',
-                ngTrueValue: '@?',
-                ngFalseValue: '@?',
                 ngChange: '&?',
                 ngDisabled: '=?',
-                lxColor: '@?'
+                ngFalseValue: '@?',
+                ngModel: '=',
+                ngTrueValue: '@?'
             },
             controller: LxCheckboxController,
-            controllerAs: 'vm',
+            controllerAs: 'lxCheckbox',
             bindToController: true,
-            transclude: true
+            transclude: true,
+            replace: true
         };
-
-        return directive;
     }
 
-    LxCheckboxController.$inject = ['LxUtils'];
+    LxCheckboxController.$inject = ['$scope', '$timeout', 'LxUtils'];
 
-    function LxCheckboxController(LxUtils)
+    function LxCheckboxController($scope, $timeout, LxUtils)
     {
-        var vm = this;
+        var lxCheckbox = this;
+        var checkboxId;
+        var checkboxHasChildren;
+        var timer;
 
-        //
-        // PRIVATE ATTRIBUTES
-        //
+        lxCheckbox.getCheckboxId = getCheckboxId;
+        lxCheckbox.getCheckboxHasChildren = getCheckboxHasChildren;
+        lxCheckbox.setCheckboxId = setCheckboxId;
+        lxCheckbox.setCheckboxHasChildren = setCheckboxHasChildren;
+        lxCheckbox.triggerNgChange = triggerNgChange;
 
-        var _checkboxId;
-        var _checkboxHasChildren;
-
-        //
-        // PUBLIC ATTRIBUTES
-        //
-
-        // Public methods
-        vm.getCheckboxId = getCheckboxId;
-        vm.getCheckboxHasChildren = getCheckboxHasChildren;
-        vm.setCheckboxId = setCheckboxId;
-        vm.setCheckboxHasChildren = setCheckboxHasChildren;
-
-        //
-        // PRIVATE METHODS
-        //
-
-        /**
-         * Initialize the controller
-         */
-        function _init()
+        $scope.$on('$destroy', function()
         {
-            setCheckboxId(LxUtils.generateUUID());
-            setCheckboxHasChildren(false);
+            $timeout.cancel(timer);
+        });
 
-            vm.ngTrueValue = angular.isUndefined(vm.ngTrueValue) ? true : vm.ngTrueValue;
-            vm.ngFalseValue = angular.isUndefined(vm.ngFalseValue) ? false : vm.ngFalseValue;
-            vm.lxColor =  angular.isUndefined(vm.lxColor) ? 'accent' : vm.lxColor;
-        }
+        init();
 
-        //
-        // PUBLIC METHODS
-        //
+        ////////////
 
         function getCheckboxId()
         {
-            return _checkboxId;
+            return checkboxId;
         }
 
         function getCheckboxHasChildren()
         {
-            return _checkboxHasChildren;
+            return checkboxHasChildren;
         }
 
-        function setCheckboxId(checkboxId)
+        function init()
         {
-            _checkboxId = checkboxId;
+            setCheckboxId(LxUtils.generateUUID());
+            setCheckboxHasChildren(false);
+
+            lxCheckbox.ngTrueValue = angular.isUndefined(lxCheckbox.ngTrueValue) ? true : lxCheckbox.ngTrueValue;
+            lxCheckbox.ngFalseValue = angular.isUndefined(lxCheckbox.ngFalseValue) ? false : lxCheckbox.ngFalseValue;
+            lxCheckbox.lxColor = angular.isUndefined(lxCheckbox.lxColor) ? 'accent' : lxCheckbox.lxColor;
         }
 
-        function setCheckboxHasChildren(checkboxHasChildren)
+        function setCheckboxId(_checkboxId)
         {
-            _checkboxHasChildren = checkboxHasChildren;
+            checkboxId = _checkboxId;
         }
 
-        //
-        // INITIALIZATION
-        //
+        function setCheckboxHasChildren(_checkboxHasChildren)
+        {
+            checkboxHasChildren = _checkboxHasChildren;
+        }
 
-        _init();
+        function triggerNgChange()
+        {
+            timer = $timeout(lxCheckbox.ngChange);
+        }
     }
 
     function lxCheckboxLabel()
     {
-        var directive =
-        {
+        return {
             restrict: 'AE',
             require: ['^lxCheckbox', '^lxCheckboxLabel'],
             templateUrl: 'checkbox-label.html',
             link: link,
             controller: LxCheckboxLabelController,
-            controllerAs: 'vm',
+            controllerAs: 'lxCheckboxLabel',
             bindToController: true,
             transclude: true,
             replace: true
         };
-
-        return directive;
 
         function link(scope, element, attrs, ctrls)
         {
@@ -128,48 +114,33 @@
 
     function LxCheckboxLabelController()
     {
-        var vm = this;
+        var lxCheckboxLabel = this;
+        var checkboxId;
 
-        //
-        // PRIVATE ATTRIBUTES
-        //
+        lxCheckboxLabel.getCheckboxId = getCheckboxId;
+        lxCheckboxLabel.setCheckboxId = setCheckboxId;
 
-        var _checkboxId;
-
-        //
-        // PUBLIC ATTRIBUTES
-        //
-
-        // Public methods
-        vm.getCheckboxId = getCheckboxId;
-        vm.setCheckboxId = setCheckboxId;
-
-        //
-        // PUBLIC METHODS
-        //
+        ////////////
 
         function getCheckboxId()
         {
-            return _checkboxId;
+            return checkboxId;
         }
 
-        function setCheckboxId(checkboxId)
+        function setCheckboxId(_checkboxId)
         {
-            _checkboxId = checkboxId;
+            checkboxId = _checkboxId;
         }
     }
 
     function lxCheckboxHelp()
     {
-        var directive =
-        {
+        return {
             restrict: 'AE',
             require: '^lxCheckbox',
             templateUrl: 'checkbox-help.html',
             transclude: true,
             replace: true
         };
-
-        return directive;
     }
 })();

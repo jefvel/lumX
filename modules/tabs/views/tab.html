@@ -1,1 +1,3 @@
-<div class="tabs-pane" ng-if="lxTabIndex === lxTabData.lxTabsActiveTab" ng-transclude="child"></div>
+<div class="tabs__pane" ng-class="{ 'tabs__pane--is-disabled': lxTab.ngDisabled }">
+    <div ng-if="lxTab.tabIsActive()" ng-transclude></div>
+</div>
