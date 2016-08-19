@@ -12,7 +12,6 @@
     {
         var service = this;
         var activeDialogId;
-        var dialogFilter;
         var dialogHeight;
         var dialogInterval;
         var dialogScrollable;
@@ -49,6 +48,8 @@
 
             $interval.cancel(dialogInterval);
 
+            var dialogFilter = scopeMap[_dialogId].dialogFilter;
+
             dialogFilter.removeClass('dialog-filter--is-shown');
             scopeMap[_dialogId].element.removeClass('dialog--is-shown');
 
@@ -60,6 +61,7 @@
                 });
 
                 dialogFilter.remove();
+                scopeMap[_dialogId].dialogFilter = null;
 
                 scopeMap[_dialogId].element
                     .hide()
@@ -177,10 +179,12 @@
                 overflow: 'hidden'
             });
 
-            dialogFilter = angular.element('<div/>',
+            var dialogFilter = angular.element('<div/>',
             {
-                class: 'dialog-filter'
+                class: 'dialog-filter dialog-filter-' + _dialogId
             });
+
+            scopeMap[activeDialogId].dialogFilter = dialogFilter;
 
             dialogFilter
                 .css('z-index', LxDepthService.getDepth())
